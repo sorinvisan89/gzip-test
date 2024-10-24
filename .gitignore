@@ -1,0 +1,8 @@
+# Default ignored files
+/shelf/
+/.idea/workspace.xml
+vcs.xml
+build/
+.gradle/
+.DS_Store
+.idea

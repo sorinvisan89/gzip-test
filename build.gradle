@@ -1,0 +1,68 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id "org.openapi.generator" version "7.0.0"
+}
+
+group = 'com.test.gzip'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Dependencies
+	implementation "io.swagger.core.v3:swagger-models:2.2.10"
+	implementation "io.swagger.core.v3:swagger-core:2.2.10"
+	implementation "org.openapitools:jackson-databind-nullable:0.2.4"
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+sourceSets {
+	main {
+		java {
+			srcDir "$buildDir/generated/src/main/java"
+		}
+	}
+}
+
+openApiGenerate {
+	generatorName = "spring"
+	inputSpec = "$rootDir/src/main/resources/openapi.yaml"
+	outputDir = "$buildDir/generated"
+	apiPackage = "com.test.api"
+	modelPackage = "com.example.model"
+	invokerPackage = "com.example.invoker"
+	configOptions = [
+			dateLibrary: "java8",
+			useJakartaEe: "true",
+			useGzipFeature: "true",
+			additionalModelTypeAnnotations: "@lombok.Data @lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
+	]
+}

@@ -1,0 +1,37 @@
+openapi: 3.0.1
+info:
+  title: Example API
+  description: This is an example API using OpenAPI
+  version: 1.0.0
+paths:
+  /example:
+    post:
+      summary: Example POST endpoint
+      operationId: executeRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExampleRequest'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleResponse'
+components:
+  schemas:
+    ExampleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+    ExampleResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          example: "Success"
