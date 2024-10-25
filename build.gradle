@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
@@ -37,6 +39,21 @@ dependencies {
 	implementation "io.swagger.core.v3:swagger-core:2.2.10"
 	implementation "org.openapitools:jackson-databind-nullable:0.2.4"
 
+	implementation 'jakarta.ws.rs:jakarta.ws.rs-api:4.0.0'
+
+//	implementation "org.jboss.resteasy:resteasy-client:6.0.0.Final"
+
+//	implementation "org.jboss.resteasy:resteasy-jackson2-provider:6.0.0.Final"
+//	implementation "org.jboss.resteasy.resteasy-jaxrs:resteasy-jaxrs:6.0.0.Final"
+
+	implementation "org.jboss.resteasy:resteasy-multipart-provider:6.0.0.Final"
+	implementation 'org.jboss.resteasy:resteasy-client:6.0.0.Final'
+	implementation 'org.jboss.resteasy:resteasy-jackson2-provider:6.2.2.Final'
+
+//	implementation 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.18.0'
+
+//	implementation 'org.jboss.resteasy.resteasy-jaxrs:resteasy-jaxrs:4.7.1.Final' // Check for the latest version
+//	implementation 'org.jboss.resteasy.resteasy-jackson2-provider:4.7.1.Final' // For Jackson support
 }
 
 tasks.named('test') {
@@ -47,15 +64,16 @@ tasks.named('test') {
 sourceSets {
 	main {
 		java {
-			srcDir "$buildDir/generated/src/main/java"
+			srcDir "$buildDir/generated-server/src/main/java"
+			srcDir "$buildDir/generated-client/src/main/java"
 		}
 	}
 }
 
-openApiGenerate {
+tasks.register('generateOpenApiServer', GenerateTask) {
 	generatorName = "spring"
 	inputSpec = "$rootDir/src/main/resources/openapi.yaml"
-	outputDir = "$buildDir/generated"
+	outputDir = "$buildDir/generated-server"
 	apiPackage = "com.test.api"
 	modelPackage = "com.example.model"
 	invokerPackage = "com.example.invoker"
@@ -65,4 +83,25 @@ openApiGenerate {
 			useGzipFeature: "true",
 			additionalModelTypeAnnotations: "@lombok.Data @lombok.Builder @lombok.NoArgsConstructor @lombok.AllArgsConstructor"
 	]
+}
+
+
+tasks.register('generateOpenApiClient', GenerateTask) {
+	generatorName = "java"
+	inputSpec = "$rootDir/src/main/resources/openapi.yaml"
+	outputDir = "$buildDir/generated-client"
+	apiPackage = "com.example.client.api"
+	modelPackage = "com.example.client.model"
+	invokerPackage = "com.example.client.invoker"
+
+	configOptions = [
+			useJakartaEe: "true",
+			useGzipFeature: "true",
+			library    : "resteasy",
+			dateLibrary: "java8"
+	]
+}
+
+tasks.register('generateApi') {
+	dependsOn 'clean', 'generateOpenApiServer', 'generateOpenApiClient'
 }

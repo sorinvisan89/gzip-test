@@ -6,6 +6,17 @@ info:
 paths:
   /example:
     post:
+      parameters:
+        - description: Compression format of the request body.
+          explode: false
+          in: header
+          name: Content-Encoding
+          required: true
+          schema:
+            enum:
+              - gzip
+            type: string
+          style: simple
       summary: Example POST endpoint
       operationId: executeRequest
       requestBody:
